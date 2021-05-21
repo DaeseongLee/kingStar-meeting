@@ -1,5 +1,6 @@
 import { Field, InputType, Int, ObjectType, registerEnumType } from "@nestjs/graphql";
 import { IsString } from "class-validator";
+import { string } from "joi";
 import { CoreEntity } from "src/common/entities/core.entity";
 import { Column, Entity } from "typeorm";
 
@@ -11,6 +12,13 @@ export enum Gender {
 registerEnumType(Gender, {
     name: 'Gender',
 });
+
+@InputType('InterestInputType', { isAbstract: true })
+@ObjectType()
+class Interest {
+    @Field(type => String)
+    name: string;
+}
 
 @InputType('UserInputType', { isAbstract: true })
 @ObjectType()
@@ -40,18 +48,17 @@ export class User extends CoreEntity {
     @IsString()
     region: string;
 
-    @Field(type => String)
-    @Column()
+    @Field(type => String, { nullable: true })
+    @Column({ nullable: true })
     @IsString()
     useImg?: string;
 
-    @Field(type => String)
-    @Column()
+    @Field(type => String, { nullable: true })
+    @Column({ nullable: true })
     @IsString()
     introduce?: string;
 
-    @Field(type => [])
+    @Field(type => [Interest])
     @Column({ type: 'json', nullable: true })
-    @IsString()
-    interestGroup: [];
+    interestGroup: Interest[];
 }

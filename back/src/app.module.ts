@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { CommonModule } from './common/common.module';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
+import { User } from './user/entities/user.entity';
 
 
 
@@ -38,7 +39,7 @@ import * as Joi from 'joi';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      autoLoadEntities: true,
+      entities: [User],
       synchronize: true,
     }),
     UserModule,
@@ -50,5 +51,3 @@ import * as Joi from 'joi';
 export class AppModule {
 
 }
-
-console.log(process.env.DB_HOST);
