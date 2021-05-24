@@ -1,3 +1,4 @@
+import { EditProfileInput, EditProfileOutput } from './dtos/editProfile.dto';
 import { CreateAccountOutput, CreateAccountInput } from './dtos/createAccount.dto';
 import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 import { User } from "./entities/user.entity";
@@ -22,5 +23,10 @@ export class UserResolver {
     @Mutation(returns => LoginOutput)
     login(@Args('input') input: LoginInput): Promise<LoginOutput> {
         return this.userService.login(input);
+    }
+
+    @Mutation(returns => EditProfileOutput)
+    editProfile(@Args('input') input: EditProfileInput): Promise<EditProfileOutput> {
+        return this.userService.editProfile(input);
     }
 }

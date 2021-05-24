@@ -1,3 +1,4 @@
+import { EditProfileInput, EditProfileOutput } from './dtos/editProfile.dto';
 import { UserProfileOutput } from './dtos/userProfile.dto';
 import { CreateAccountInput, CreateAccountOutput } from './dtos/createAccount.dto';
 import { Injectable } from "@nestjs/common";
@@ -87,5 +88,29 @@ export class UserService {
             }
         }
 
+    };
+
+    async editProfile(input: EditProfileInput): Promise<EditProfileOutput> {
+        try {
+            const user = await this.users.findOne({ email: input.email });
+            if (!user) {
+                return {
+                    ok: false,
+                    error: 'User not found',
+                }
+            }
+            await this.users.save({
+                ...user,
+                ...input,
+            });
+            return {
+                ok: true,
+            }
+        } catch (error) {
+            return {
+                ok: false,
+                error,
+            }
+        }
     }
 }
