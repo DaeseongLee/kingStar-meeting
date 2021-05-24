@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
@@ -6,6 +6,8 @@ import { CommonModule } from './common/common.module';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { User } from './user/entities/user.entity';
+import { JwtModule } from './jwt/jwt.module';
+import { jwtMiddleware } from './jwt/jwt.middleware';
 
 
 
@@ -13,7 +15,7 @@ import { User } from './user/entities/user.entity';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env.test',
+      envFilePath: process.env.NODE_ENV === 'dev' ? '.env' : '.env.test',
       ignoreEnvFile: process.env.NODE_ENV === 'production', //배포할때는 환경변수파일 무시하겠다.
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()
@@ -24,12 +26,13 @@ import { User } from './user/entities/user.entity';
         DB_USERNAME: Joi.string(),
         DB_PASSWORD: Joi.string(),
         DB_NAME: Joi.string(),
+        SECRET_KEY: Joi.string().required(),
       })
     }),
     GraphQLModule.forRoot(
       {
         autoSchemaFile: true,
-
+        context: ({ req }) => ({ user: req['user'] }),
       }
     ),
     TypeOrmModule.forRoot({
@@ -44,10 +47,19 @@ import { User } from './user/entities/user.entity';
     }),
     UserModule,
     CommonModule,
+    JwtModule.forRoot({
+      secretKey: process.env.SECRET_KEY,
+    }),
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {
-
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(jwtMiddleware).forRoutes({
+      path: '/graphql',
+      method: RequestMethod.ALL
+    })
+  }
 }
+
