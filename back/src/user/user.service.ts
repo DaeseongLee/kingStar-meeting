@@ -90,9 +90,10 @@ export class UserService {
 
     };
 
-    async editProfile(input: EditProfileInput): Promise<EditProfileOutput> {
+    async editProfile(loginUser: User, input: EditProfileInput): Promise<EditProfileOutput> {
         try {
-            const user = await this.users.findOne({ email: input.email });
+            const user = await this.users.findOne(loginUser?.id);
+
             if (!user) {
                 return {
                     ok: false,
