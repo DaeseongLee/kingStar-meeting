@@ -8,6 +8,7 @@ import * as Joi from 'joi';
 import { User } from './user/entities/user.entity';
 import { JwtModule } from './jwt/jwt.module';
 import { jwtMiddleware } from './jwt/jwt.middleware';
+import { AuthModule } from './auth/auth.module';
 
 
 
@@ -50,6 +51,7 @@ import { jwtMiddleware } from './jwt/jwt.middleware';
     JwtModule.forRoot({
       secretKey: process.env.SECRET_KEY,
     }),
+    AuthModule,
   ],
   controllers: [],
   providers: [],
